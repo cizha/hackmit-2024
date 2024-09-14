@@ -80,13 +80,17 @@ class Bag:
         return len(self.tiles) == 0
 
 
-def update_board(move):
+def new_game():
+    return new Game()
+
+
+def update_board(game, move):
     """
     takes move data from the frontend, checks if the move is allowed, and makes the move if so
     after the player, board, and bag states of the game are modified, returns updated states to frontend
     """
     # backend stores the board
-    if is_valid(move):
+    if game.board.is_valid(move): # TODO - requires implementation of scrabble game state
         make_move(move)
     else:
         # don't update move
