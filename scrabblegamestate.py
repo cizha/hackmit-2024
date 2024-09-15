@@ -8,7 +8,7 @@ except ImportError:
             print('With no import, {} is allowed. Rule was {}'.format(number, self.sequence_ID))
             return True
 
-class gamestate:
+class boardstate:
     def __init__(self, dimension, sequence_ID):
         self.dimension = dimension
         self.data = [[None] * self.dimension] * self.dimension
@@ -26,86 +26,105 @@ class gamestate:
         return True
     
     def return_next_data(self, move):
-        data_next = [list(row) for row in self.data] # creates a temporary copy of the gamestate
+        data_next = [list(row) for row in self.data] # creates a temporary copy of the boardstate
         for square in move:
             row, col, digit = square
             data_next[row][col] = digit
         return data_next
 
+    def numbers_from_row(self, row):
+        # this takes in a row or column, in the form [1, 2, 6, None, None, 5, None, None] for example
+        # and outputs the numbers that need to be tested, for example [126]
+        string_expression = ''.join((str(i) if i is not None else '_' for i in row))
+        strings = string_expression.split('_')
+        strings = tuple(string for string in strings if len(string) >= 2)
+        return tuple(int(i) for i in strings)
+
     def is_number_legal(self, move):
         self.data_next = self.return_next_data(move)
         if move[0][0] == move[1][0]: # the move is a row move
-            row_in_question = list(self.data_next[move[0][0]])[move[0][1]:]
+            row_in_question = list(self.data_next[move[0][0]])
 
         elif move[0][1] == move[1][1]: # the move is a column move
-            row_in_question = [row[move[0][1]] for row in self.data_next][move[0][0]] # this is actually a column, not a row
+            row_in_question = [row[move[0][1]] for row in self.data_next] # this is actually a column, not a row
             
         else:
             raise ValueError('The move is not confined to one row or one column I think')
-        
-        number_submitted_as_string = ''
-        print(row_in_question, type(row_in_question))
-        for digit in row_in_question:
-            if digit is not None:
-                number_submitted_as_string += str(digit)
-            else:
-                break
-        number_submitted = int(number_submitted_as_string)
-        return self.sequence_manager.verify_number(number_submitted)
+        numbers_to_test = self.numbers_from_row(row_in_question)
+        for number in numbers_to_test:
+            if not self.sequence_manager.verify_number(number):
+                return False
+        return True
 
+        # number_submitted_as_string = ''
+        # print(row_in_question, type(row_in_question))
+        # for digit in row_in_question:
+        #     if digit is not None:
+        #         number_submitted_as_string += str(digit)
+        #     else:
+        #         break
+        # number_submitted = int(number_submitted_as_string)
+        # return self.sequence_manager.verify_number(number_submitted)
 
     def is_move_legal(self, move):
         return self.does_move_fit(move) and self.is_number_legal(move)
 
-    def update_data_with_move(self, move):
-        # print(self.return_next_data(move))
-        self.data = self.return_next_data(move)
-
-
-
-
-    ##############################
-    # This is the only function 
-    # that needs to be called
-    # from outside of the class.
-    ##############################
-    # If the move is illegal, it returns False.
-    # If the move is legal, it it returns True
-    # and updates self.data
-    ##############################
-    def receive_move(self, move):
-        if not self.does_move_fit(move):
-            return False
-        elif not self.is_number_legal(move):
-            return False
-        self.update_data_with_move(move)
-        return True
-
-
     def __repr__(self): 
-        return 'gamestate({})'.format(self.dimension)
+        return 'boardstate({})'.format(self.dimension)
     
     def display(self):
+        board_str = ""
         for row in self.data:
             for number in row:
                 if number is None:
+                    board_str+="_ "
                     print('_', end = ' ')
                 else:
+                    board_str+=str(number) + ' '
                     print(number, end = ' ')
+            board_str+='\n'
             print() # new line
+        # board_str+='\n'
         print()
+        return board_str
+
+    def to_str(self):
+        board_str = ""
+        for row in self.data:
+            for number in row:
+                if number is None:
+                    board_str+="_ "
+                else:
+                    board_str+=str(number) + ' '
+            board_str+='\n'
+        return board_str
+
+    # ##############################
+    # is_move_valid and update_board_with_move
+    # are the only two functions that need to be
+    # accessed from outside the class. 
+    # ##############################
+    def is_move_valid(self, move):
+        return self.does_move_fit(move) and self.is_number_legal(move)
+    
+    def update_board_with_move(self, move):
+        # print(self.return_next_data(move))
+        self.data = self.return_next_data(move)
 
 def debugging():
-    gs = gamestate(5, 'OEIScode')
-    gs.display()
+    bs = boardstate(5, 'OEIScode')
+    bs.display()
 
-    move = ((1,1,1), (1,2,1))
-    print(gs.receive_move(move))
-    gs.display()
+    move = ((0,0,1), (0,1,9), (0, 2, 6))
+    legal = bs.is_move_legal(move)
+    if legal:
+        bs.update_board_with_move(move)
+    bs.display()
 
-    move = ((2,1,1), (3,1,1))
-    print(gs.receive_move(move))
-    gs.display()
-
+    move = ((1,1,1), (2,1,1), (3,1,1))
+    legal = bs.is_move_legal(move)
+    if legal:
+        bs.update_board_with_move(move)
+    bs.display()
 if __name__ == '__main__':
     debugging()
