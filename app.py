@@ -1,20 +1,14 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from game import Game
 
 from flask_cors import CORS
 
 
-# @app.route('/api/hello', methods=['GET'])
-# def hello():
-#     return jsonify(message="Hello from Flask!")
-
-
-
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    # CORS(app)
     # app.config.from_mapping(
     #     SECRET_KEY='dev',
     #     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -33,6 +27,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    
+    @app.before_request
+    def handle_root_visit():
+        if request.path == '/':
+            create_game()  # Create a new game when the root URL is accessed
     # a simple page that says hello
     # @app.route('/')
     # def hello():
@@ -42,22 +41,21 @@ def create_app(test_config=None):
     def serve(path):
         return send_from_directory(app.instance_path, 'index.html')
 
-    @app.route('/scrabble/create-game', method=['GET'])
+    @app.route('/scrabble/create-game', methods=['GET'])
     def create_game():
         game = Game()
         return get_game_state(game)
-
     
     @app.route('/scrabble/game-state', methods=['POST'])
     def get_game_state(game):
-        board = game.board
+        board = game.get_board()
+        players = game.get_players()
         dataToSend = {
             "grid": board.data,
             "playerAScore": 0,
             "playerBScore": 0,
-            "playerATiles": [1,2,3,4,5,6,7], 
+            "playerATiles": players[0].get_tiles(),#[1,2,3,4,5,6,7], 
             "playerBTiles": [1,2,3,4,5,6,7]  
-
         }
         return jsonify(dataToSend)
     

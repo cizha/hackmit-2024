@@ -22,6 +22,9 @@ class Game:
     def get_board(self):
         return self.board
 
+    def get_players(self):
+        return self.players
+
     def move_is_valid(self, move):
         return self.board.is_move_valid(move) and self.player.is_valid(move)
 
@@ -50,6 +53,9 @@ class Player:
     def __init__(self, pname):
         self.tiles = []
         self.name = pname
+
+    def get_tiles(self):
+        return self.tiles
 
     def add_tile(self, val):
         self.tiles.append(val)
