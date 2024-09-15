@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import './game.css';
 
@@ -18,8 +18,11 @@ const Game: React.FC = () => {
   const [playerBTile, setPlayerBTile] = useState<number | null>(null);
 
   // Fetch initial game data from the backend
+
+  const constantRef = useRef(location.state?.mode || 'PrimeNumber'); // Initialize with a constant value
+
   useEffect(() => {
-    fetch(`/scrabble/game-state?mode=${gameMode}`)
+    fetch(`/scrabble/game-state?mode=${constantRef.current}) //gameMode}`)
       .then((res) => res.json())
       .then((data) => {
         setGrid(data.grid);
@@ -29,7 +32,7 @@ const Game: React.FC = () => {
         setPlayerATiles(data.playerATiles); 
         setPlayerBTiles(data.playerBTiles); 
       });
-  }, []);
+  }, []); 
 
   const handleCellClick = (index: number) => {
     setSelectedCell(index); // Select a cell on the grid

@@ -1,7 +1,7 @@
 // app.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './app.css';
+import './App.css';
 
 const App: React.FC = () => {
   const navigate = useNavigate();

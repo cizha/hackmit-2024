@@ -2,9 +2,19 @@ import os
 from flask import Flask, jsonify, request
 from game import Game
 
+from flask_cors import CORS
+
+
+# @app.route('/api/hello', methods=['GET'])
+# def hello():
+#     return jsonify(message="Hello from Flask!")
+
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     # app.config.from_mapping(
     #     SECRET_KEY='dev',
     #     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -24,12 +34,22 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/')
-    def hello():
-        return 'Hello, World!'
+    # @app.route('/')
+    # def hello():
+    #     return 'Hello, World!'
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        return send_from_directory(app.instance_path, 'index.html')
+
+    @app.route('/scrabble/create-game', method=['GET'])
+    def create_game():
+        game = Game()
+        return get_game_state(game)
+
     
     @app.route('/scrabble/game-state', methods=['POST'])
-    def gamestate(game):
+    def get_game_state(game):
         board = game.board
         dataToSend = {
             "grid": board.data,
@@ -42,7 +62,7 @@ def create_app(test_config=None):
         return jsonify(dataToSend)
     
     @app.route('/scrabble/update-game', methods=['GET'])
-    def updategame(game):
+    def update_game(game):
         """
         takes move data from the frontend, checks if the move is allowed, 
             and makes the move if so, modifying the board, player, and bag
@@ -67,8 +87,5 @@ def create_app(test_config=None):
 
     return app
 
-
-def new_game():
-    game = Game()
-    return
-
+if __name__ == '__main__':
+    create_app().app.run(debug=True)
