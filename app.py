@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify, request
 
 def create_app(test_config=None):
     # create and configure the app
@@ -26,6 +26,16 @@ def create_app(test_config=None):
     @app.route('/')
     def hello():
         return 'Hello, World!'
+    
+    @app.route('/scrabble/game-state', methods=['POST'])
+    def gamestate():
+        dataToSend = {}
+        return jsonify(dataToSend)
+    
+    @app.route('/scrabble/update-game', methods=['GET'])
+    def updategame():
+        response = ''
+        return jsonify(response)
 
     return app
 
