@@ -1,9 +1,10 @@
 import os
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, redirect, url_for
 from game import Game
 
 from flask_cors import CORS
 
+game_instance = None
 
 def create_app(test_config=None):
     # create and configure the app
@@ -27,27 +28,26 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    
-    @app.before_request
-    def handle_root_visit():
-        if request.path == '/':
-            create_game()  # Create a new game when the root URL is accessed
-    # a simple page that says hello
     # @app.route('/')
-    # def hello():
-    #     return 'Hello, World!'
+    # def index():
+    #     return "Hello, Flask!"
+
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
-        return send_from_directory(app.instance_path, 'index.html')
+        return send_from_directory(app.instance_path, 'index.tsx')
 
     @app.route('/scrabble/create-game', methods=['GET'])
     def create_game():
-        game = Game()
-        return get_game_state(game)
+        global game_instance
+        game_instance = Game()
+        return redirect(url_for('serve', path='scrabble'))
     
     @app.route('/scrabble/game-state', methods=['POST'])
     def get_game_state(game):
+        global game_instance
+        if game_instance is None:
+            return jsonify({"message": "No game in progress. Start a new game!"}), 400
         board = game.get_board()
         players = game.get_players()
         dataToSend = {
@@ -86,4 +86,7 @@ def create_app(test_config=None):
     return app
 
 if __name__ == '__main__':
-    create_app().app.run(debug=True)
+    app = create_app()
+    app.run(debug=True)
+
+

@@ -12,10 +12,11 @@ const Game: React.FC = () => {
   const [playerAScore, setPlayerAScore] = useState<number>(0);
   const [playerBScore, setPlayerBScore] = useState<number>(0);
   const [round, setRound] = useState<number>(1);
-  const [playerATiles, setPlayerATiles] = useState<number[]>(Array(7).fill(0));
-  const [playerATile, setPlayerATile] = useState<number | null>(null);
-  const [playerBTiles, setPlayerBTiles] = useState<number[]>(Array(7).fill(0));
-  const [playerBTile, setPlayerBTile] = useState<number | null>(null);
+
+  const [playerATiles, setPlayerATiles] = useState<{ index: number; value: number }[]>(Array(7).fill({ index: 0, value: 0 }));
+  const [playerATile, setPlayerATile] = useState<{ index: number; value: number } | null>(null);
+  const [playerBTiles, setPlayerBTiles] = useState<{ index: number; value: number }[]>(Array(7).fill({ index: 0, value: 0 }));
+  const [playerBTile, setPlayerBTile] = useState<{ index: number; value: number } | null>(null);
 
   // Fetch initial game data from the backend
 
@@ -29,8 +30,8 @@ const Game: React.FC = () => {
         setPlayerAScore(data.playerAScore);
         setPlayerBScore(data.playerBScore);
         setRound(data.round);
-        setPlayerATiles(data.playerATiles); 
-        setPlayerBTiles(data.playerBTiles); 
+        setPlayerATiles(data.playerATiles.map((value: number, index: number) => ({ index, value })));
+        setPlayerBTiles(data.playerBTiles.map((value: number, index: number) => ({ index, value })));
       });
   }, []); 
 
@@ -38,11 +39,11 @@ const Game: React.FC = () => {
     setSelectedCell(index); // Select a cell on the grid
   };
 
-  const handleATileClick = (tile: number) => {
+  const handleATileClick = (tile: { index: number; value: number }) => {
     setPlayerATile(tile); // Select a tile from Player A's tiles
   };
 
-  const handleBTileClick = (tile: number) => {
+  const handleBTileClick = (tile: { index: number; value: number }) => {
     setPlayerBTile(tile); // Select a tile from Player B's tiles
   };
 
@@ -56,6 +57,7 @@ const Game: React.FC = () => {
           selectedCell,
           tile: playerATile,
           player: 'A',
+          mode: gameMode,
         }),
       })
         .then((res) => res.json())
@@ -64,8 +66,8 @@ const Game: React.FC = () => {
           setGrid(data.grid);
           setPlayerAScore(data.playerAScore);
           setPlayerBScore(data.playerBScore);
-          setPlayerATiles(data.playerATiles); // New tiles for Player A
-          setPlayerBTiles(data.playerBTiles); // New tiles for Player B
+          setPlayerATiles(data.playerA.tiles.map((value: number, index: number) => ({ index, value })));
+          setPlayerBTiles(data.playerB.tiles.map((value: number, index: number) => ({ index, value })));
         });
 
       // Reset selections
@@ -80,6 +82,7 @@ const Game: React.FC = () => {
           selectedCell,
           tile: playerBTile,
           player: 'B',
+          mode: gameMode,
         }),
       })
         .then((res) => res.json())
@@ -88,8 +91,8 @@ const Game: React.FC = () => {
           setGrid(data.grid);
           setPlayerAScore(data.playerAScore);
           setPlayerBScore(data.playerBScore);
-          setPlayerATiles(data.playerATiles); // New tiles for Player A
-          setPlayerBTiles(data.playerBTiles); // New tiles for Player B
+          setPlayerATiles(data.playerA.tiles.map((value: number, index: number) => ({ index, value })));
+          setPlayerBTiles(data.playerB.tiles.map((value: number, index: number) => ({ index, value })));
         });
 
       // Reset selections
@@ -101,7 +104,7 @@ const Game: React.FC = () => {
   return (
     <div className="app-container">
       <div className="header">
-        <h2>SCRABBLE - {gameMode.toUpperCase()} MODE</h2>
+        <h2>SCRABBLE : {gameMode.toUpperCase()} MODE</h2>
         <p>ROUND {round}</p>
       </div>
 
@@ -110,15 +113,15 @@ const Game: React.FC = () => {
         <div className="player-panel">
           <h3>Player A: {playerAScore} pts</h3>
           <div className="player-tiles">
-            {playerATiles.map((tile, idx) => (
-              <div
-                key={idx}
-                className={`tile ${playerATile === idx ? 'selected' : ''}`}
-                onClick={() => handleATileClick(idx)} // Select a tile when clicked
-              >
-                {tile}
-              </div>
-            ))}
+              {playerBTiles.map((tile) => (
+                  <div
+                    key={tile.index}
+                    className={`tile ${playerBTile?.index === tile.index ? 'selected' : ''}`}
+                    onClick={() => handleBTileClick(tile)}
+                  >
+                    {tile.value}
+                  </div>
+                ))}
           </div>
         </div>
 
@@ -139,15 +142,15 @@ const Game: React.FC = () => {
         <div className="player-panel">
           <h3>Player B: {playerBScore} pts</h3>
           <div className="player-tiles">
-            {playerBTiles.map((tile, idx) => (
-              <div
-                key={idx}
-                className={`tile ${playerBTile === idx ? 'selected' : ''}`}
-                onClick={() => handleBTileClick(idx)} // Select a tile for Player B
-              >
-                {tile}
-              </div>
-            ))}
+            {playerBTiles.map((tile) => (
+                <div
+                  key={tile.index}
+                  className={`tile ${playerBTile?.index === tile.index ? 'selected' : ''}`}
+                  onClick={() => handleBTileClick(tile)}
+                >
+                  {tile.value}
+                </div>
+              ))}
           </div>
         </div>
       </div>
