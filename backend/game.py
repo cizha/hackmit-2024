@@ -53,6 +53,7 @@ class Player:
     def __init__(self, pname):
         self.tiles = []
         self.name = pname
+        self.score = 0
 
     def get_tiles(self):
         return self.tiles

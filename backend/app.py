@@ -5,11 +5,18 @@ from game import Game
 from flask_cors import CORS
 
 game_instance = None
+# games = {}
+
+# def create_game():
+#     game_id = str(uuid.uuid4())
+#     games[game_id] = Game()
+#     return game_id
 
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    # CORS(app)
+    # app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
+    CORS(app)
     # app.config.from_mapping(
     #     SECRET_KEY='dev',
     #     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -35,13 +42,22 @@ def create_app(test_config=None):
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
-        return send_from_directory(app.instance_path, 'index.tsx')
+        return send_from_directory(app.static_folder, 'index.html')
 
     @app.route('/scrabble/create-game', methods=['GET'])
     def create_game():
         global game_instance
         game_instance = Game()
-        return redirect(url_for('serve', path='scrabble'))
+        return jsonify({
+            'success': True,
+            'message': 'Game created successfully'
+        }), 200
+    # except Exception as e:
+    #     # Handle exceptions and respond with an error message
+    #     return jsonify({
+    #         'success': False,
+    #         'message': str(e)
+    #     }), 500
     
     @app.route('/scrabble/game-state', methods=['POST'])
     def get_game_state(game):

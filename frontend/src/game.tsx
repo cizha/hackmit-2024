@@ -22,8 +22,10 @@ const Game: React.FC = () => {
 
   const constantRef = useRef(location.state?.mode || 'PrimeNumber'); // Initialize with a constant value
 
+  const local = "http://localhost:3000"
+
   useEffect(() => {
-    fetch(`/scrabble/game-state?mode=${constantRef.current}) //gameMode}`)
+    fetch(local+`/scrabble/game-state?mode=${constantRef.current}) //gameMode}`)
       .then((res) => res.json())
       .then((data) => {
         setGrid(data.grid);

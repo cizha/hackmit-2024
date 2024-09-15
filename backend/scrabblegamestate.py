@@ -1,12 +1,14 @@
-try:
-    from sequences import SequenceManager
-except ImportError:
-    class SequenceManager:
-        def __init__(self, sequence_ID):
-            self.sequence_ID = sequence_ID
-        def verify_number(self, number):
-            print('With no import, {} is allowed. Rule was {}'.format(number, self.sequence_ID))
-            return True
+# try:
+#     from sequences import SequenceManager
+# except ImportError:
+#     class SequenceManager:
+#         def __init__(self, sequence_ID):
+#             self.sequence_ID = sequence_ID
+#         def verify_number(self, number):
+#             print('With no import, {} is allowed. Rule was {}'.format(number, self.sequence_ID))
+#             return True
+
+from sequences import SequenceManager
 
 class boardstate:
     def __init__(self, dimension, seq_ID='A001477'):
