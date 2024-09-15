@@ -39,3 +39,21 @@ def create_app(test_config=None):
 
     return app
 
+
+def new_game():
+    return new Game()
+
+
+def update_game(game, move):
+    """
+    takes move data from the frontend, checks if the move is allowed, 
+        and makes the move if so, modifying the board, player, and bag
+    after the player, board, and bag states of the game are modified, returns updated states to frontend
+    """
+    if game.move_is_valid(move): 
+        # move is valid and move has been updated
+        make_move(move)
+        return True, "Success!"
+    else:
+        # don't update move
+        return False, "Invalid move; please try again."

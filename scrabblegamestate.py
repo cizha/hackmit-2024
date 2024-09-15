@@ -73,14 +73,31 @@ class boardstate:
         return 'boardstate({})'.format(self.dimension)
     
     def display(self):
+        board_str = ""
         for row in self.data:
             for number in row:
                 if number is None:
+                    board_str+="_ "
                     print('_', end = ' ')
                 else:
+                    board_str+=str(number) + ' '
                     print(number, end = ' ')
+            board_str+='\n'
             print() # new line
+        # board_str+='\n'
         print()
+        return board_str
+
+    def to_str(self):
+        board_str = ""
+        for row in self.data:
+            for number in row:
+                if number is None:
+                    board_str+="_ "
+                else:
+                    board_str+=str(number) + ' '
+            board_str+='\n'
+        return board_str
 
     # ##############################
     # is_move_valid and update_board_with_move
