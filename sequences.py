@@ -5,8 +5,8 @@ import random
 import os
 
 class SequenceManager:
-    def __init__(self, db_path='sequences.db'):
-        self.eois_id = None
+    def __init__(self, seq_id=None, db_path='sequences.db'):
+        self.eois_id = seq_id
         self.eois_res = None
         self.eois_values = None
         self.eois_offset = None
@@ -88,8 +88,12 @@ class SequenceManager:
             print(f"Failed to insert ({self.eois_id}, {val}) due to uniqueness constraint.")
 
     def generate_sequence(self):
-        for (n, value) in enumerate(self.eois_values, start=self.eois_offset):
-            self.insert_value(value, n)
+        if False:
+            for (n, value) in enumerate(self.eois_values, start=self.eois_offset):
+                self.insert_value(value, n)
+        else:
+            for (n, value) in enumerate(range(0,10000000-1), start=self.eois_offset):
+                self.insert_value(value, n)
         # TODO Basically check if the sequence is already generated
         # TODO If it is not then add the eois sequence to the database
             # You can add things to the data base by looking at the values giving
@@ -102,7 +106,7 @@ class SequenceManager:
 if __name__ == '__main__':
     try:
         sequence_manager = SequenceManager()
-        sequence_manager.set_eois_id('A000001')
+        sequence_manager.set_eois_id('A001477')
         print(sequence_manager.verify_number('1'))
     finally:
         sequence_manager.close_connection()

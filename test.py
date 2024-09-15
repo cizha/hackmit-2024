@@ -6,7 +6,7 @@ from scrabblegamestate import boardstate
 class TestStringMethods(unittest.TestCase):
 
     def test_board(self):
-        bs = boardstate(5, 'OEIScode')
+        bs = boardstate(5, 'A001477')
         self.assertEqual(repr(bs.display()), repr(('_ '*5 +'\n')*5))
 
         move = ((0,0,1), (0,1,9), (0, 2, 6))
