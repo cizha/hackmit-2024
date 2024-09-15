@@ -12,7 +12,7 @@ class boardstate:
     def __init__(self, dimension, sequence_ID):
         self.dimension = dimension
         self.data = [[None] * self.dimension] * self.dimension
-        self.sequence_manager = SequenceManager(sequence_ID)
+        self.sequence_manager = SequenceManager(seq_id=sequence_ID)
         pass
     
     # We expect 'move' to be a tuple of 3-tuples where each 3-tuple is a square
