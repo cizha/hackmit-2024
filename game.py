@@ -22,11 +22,11 @@ class Game:
     def get_board(self):
         return self.board
 
-    def move_is_valid(move):
+    def move_is_valid(self, move):
         return self.board.is_move_valid(move) and self.player.is_valid(move)
 
     # move = tuple of triples - row, col, tile value 
-    def make_move(move):
+    def make_move(self, move):
         # place tiles on board and remove tiles from player's tiles
         self.board.write_data_to_board(move)
         self.player.update_move(move)
@@ -36,7 +36,7 @@ class Game:
         # self.fill_tiles(player)
 
         # update current and next players to be set up for next move
-        self.curr_player = self.players[next_player]
+        self.curr_player = self.players[self.next_player]
         self.next_player+=1
         self.next_player%=len(self.players)
 
